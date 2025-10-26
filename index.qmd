@@ -1,11 +1,31 @@
 ---
-title: "Home"
+title: "Mia Silva"
+image: "mia_circle.jpg"
+about:
+  template: trestles
+  links:
+    - text: 'Resume'
+      icon: file-lines
+      url: "https://docs.google.com/document/d/1tnwgUzmvh0W97UDVXwC5V3BgGap5SfsH3o6hSrSzTRA/edit?usp=sharing"
+    - text: 'LinkedIn'
+      icon: linkedin
+      url: "https://www.linkedin.com/in/mia-silva0208/"
+    - text: 'GitHub'
+      icon: github
+      url: "https://github.com/msilva21-jh"
+    - text: 'Email'
+      icon: envelope
+      url: "mailto:msilva21@jh.edu"
 ---
 
-This is a Quarto website.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
-```{r}
-1 + 1
+```{r load_packages}
+#| message: FALSE
+#| warning: FALSE
+#| include: FALSE
+library(fontawesome)
 ```
+
+I'm currently a Masters student in the Department of Biostatistics at Johns Hopkins Bloomberg School of Public Health. My goal is to leverage what I learn about study design and statistical data analysis to make a meaningful impact on clinical and public health research.
+
+I previously worked for two years as a Staff Research Associate in the Department of Pediatrics at UC Davis Health where I coordinated studies and projects for the Diabetes Research Team in Pediatric Endocrinology, and gained well-rounded knowledge in clinical research protocol, regulations, and practices.
+
