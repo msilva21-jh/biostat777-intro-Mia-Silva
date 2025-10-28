@@ -28,4 +28,3 @@ library(fontawesome)
 I'm currently a Masters student in the Department of Biostatistics at Johns Hopkins Bloomberg School of Public Health. My goal is to leverage what I learn about study design and statistical data analysis to make a meaningful impact on clinical and public health research.
 
 I previously worked for two years as a Staff Research Associate in the Department of Pediatrics at UC Davis Health where I coordinated studies and projects for the Diabetes Research Team in Pediatric Endocrinology, and gained well-rounded knowledge in clinical research protocol, regulations, and practices.
-
