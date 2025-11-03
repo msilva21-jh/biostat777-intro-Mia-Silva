@@ -3,16 +3,14 @@ title: "Example Analysis"
 format: html
 ---
 
-**[Question:]{style="color:  #2D4947;"}**
-*How has the prevalence of traumatic brain injuries (TBI) changed over time between 2006 and 2014, and how do different mechanisms of injury relate to patient outcomes?*
+## [Question]{style="color:  #2D4947;"} 
+**The goal is to have a better understanding of traumatic brain injury (TBI) trends and how different causes lead to different outcomes in certain populations. Specifically, how has the incidence of TBI changed over time between 2006 and 2014? How do different mechanisms of injury relate to patient outcomes, and does this differ by age?**
 
-**[Audience:]{style="color:  #68A39F;"}**
-The general public who are interested in learning more about the relatively recent history of TBI trends and outcomes .
+[**Audience:**]{style="color:  #68A39F;"} The general public who are interested in learning more about the relatively recent history of TBI trends and outcomes .
 
-**[Data Source:]{style="color:  #68A39F;"}**
-This analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the [CDC](https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf).
+[**Data Source:**]{style="color:  #68A39F;"} This analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the [CDC](https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf).
 
-::: {.callout-note}
+:::{.callout-important}
 Link to GitHub Repo and data dictionary: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-03-24/readme.md).
 :::
 
@@ -23,45 +21,51 @@ tbi_age <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/ti
 tbi_year <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv')
 ```
 
-**[Analysis]{style="color:  #2D4947;"}**
+## [Analysis]{style="color:  #2D4947;"}
 
-*Incidence Over Time*
+[**Incidence Over Time**]{style="color:  #68A39F;"}
+
+:::{.callout-note}
+For the purposes of this analysis, "outcome" refers to the level of severity (i.e., how much medical attention received or mortality) following a TBI. This corresponds to "Emergency Department Visits", "Hospitalizations", and "Deaths" in the data set. "Mechanism of injury" and "cause" will be used interchangeably.
+:::
 
 ```{r}
 #| warning: FALSE
 #| message: FALSE
+#| fig.width: 8
+#| fig.height: 4
 
 library(dplyr)
 library(tidyr)
-library(forcats)
 
-# Wrangling data into a separate total rate tibble
+# Wrangling data into rate tibbles
 all_rate_tbi <- tbi_year %>%
   filter(injury_mechanism == "Total") %>%
   group_by(year, type) %>%
-  summarise(estimated_rate = rate_est)
+  summarise(total_rate = rate_est)
 
-# Wrangling data into a separate total number tibble (injury mehcanism == "Total" does not have a number_est value)
-all_number_tbi <- tbi_year %>%
+mech_rate_tbi <- tbi_year %>%
   filter(injury_mechanism != "Total") %>%
-  group_by(year, type) %>%
-  summarise(estimated_case_num = round(sum(number_est)/1000, digits = 1))
+  group_by(year, injury_mechanism, type) %>%
+  summarise(mech_rate = rate_est)
 
 # Joining the two tibbles together
-all_tbi <- left_join(all_rate_tbi, all_number_tbi, by = c("year", "type"))
+tbi_rates <- left_join(mech_rate_tbi, all_rate_tbi, by = c("year", "type"))
 
 library(ggplot2)
 library(ggtext)
+library(stringr)
 
-# Plotting the incidence of TBI over time
-ggplot(all_tbi) +
-  geom_point(aes(x = year, y = estimated_rate, color = type), size = 3) +
-  geom_line(aes(x = year, y = estimated_rate, color = type), size = 1) +
+# Plotting the rate of TBI over time
+# Overall rates by outcome (allows for direct comparison)
+ggplot(tbi_rates) +
+  geom_point(aes(x = year, y = total_rate, color = type), size = 3) +
+  geom_line(aes(x = year, y = total_rate, color = type), size = 1) +
   scale_color_manual(values = c("Emergency Department Visit" = "#1BB6AFFF", 
                                "Hospitalizations" = "#088BBEFF", 
                                "Deaths" = "#172869FF")) +
   facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths"))) +
-  labs(title = "Estimated Rate of Traumatic Brain Injury in the US (2006-2014)",
+  labs(title = "Overall Rates of TBI in the US Over Time by Outcome (2006-2014)",
        subtitle = "insert subtitle here",
        x = "Year",
        y = "Rate per 100,000 in population",
@@ -73,24 +77,130 @@ ggplot(all_tbi) +
         plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
         legend.position = "none")
 
-ggplot(all_tbi) +
-  geom_point(aes(x = year, y = estimated_case_num, color = type), size = 3) +
-  geom_line(aes(x = year, y = estimated_case_num, color = type), size = 1) +
-  scale_color_manual(values = c("Emergency Department Visit" = "#EA7580FF", 
-                                "Hospitalizations" = "#F6A1A5FF", 
-                                "Deaths" = "#F8CD9CFF")) +
-  facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths"))) +
-  labs(title = "Estimated Case Numbers of Traumatic Brain Injury in the US (2006-2014)",
+```
+```{r}
+#| warning: FALSE
+#| message: FALSE
+#| fig.width: 10
+#| fig.height: 8
+
+# Rates by outcome and mechanism (scaled, more detailed view)
+ggplot(tbi_rates) +
+  geom_point(aes(x = year, y = total_rate, color = "All"), size = 3, alpha = 0.5) +
+  geom_line(aes(x = year, y = total_rate, color = "All"), size = 1, alpha = 0.5) +
+  geom_point(aes(x = year, y = mech_rate, color = injury_mechanism), size = 2, alpha = 0.5) +
+  geom_line(aes(x = year, y = mech_rate, color = injury_mechanism), size = 0.5, alpha = 0.5) +
+  facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths")),
+             labeller = label_wrap_gen(width = 25),
+             scales = "free_y") +
+  labs(title = "Rates of TBI in the US Over Time (2006-2014)",
+       subtitle = "Plots faceted by outcome and further broken down by mechanism of injury to visualize potential trends specific to each outcome",
+       x = "Year",
+       y = "Rate per 100,000 in population",
+       caption = "Note: Facets individually scaled to help with visualizing\nspecific differences in mechanisims of injury",
+       color = "Mechanism") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 12, face = "bold", color = "black", 
+                                  hjust = 0.5, margin = margin(b = 10)),
+        axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
+        plot.subtitle = element_text(size = 8, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        plot.caption = element_text(size = 6),
+        legend.position = "right",
+        legend.title = element_text(size = 8, face = "bold", margin = margin(r = 5)),
+        legend.text = element_text(size = 6, margin = margin(r = 5)),
+        legend.key.size = unit(2.5, "lines")) +
+  scale_color_manual(labels = function(x) str_wrap(x, width = 10), 
+                     values = c("All" = "black",
+                                "Assault" = "#A40000FF",
+                                "Intentional self-harm" = "#16317DFF",
+                                "Motor vehicle crashes" = "#007E2FFF",
+                                "Other or no mechanism specified" = "#FFCD12FF",
+                                "Other unintentional injury, mechanism unspecified" = "#B86092FF",
+                                "Unintentional falls" = "#721B3EFF",
+                                "Unintentionally struck by or against an object" = "#00B7A7FF"),
+                     limits = c("All", 
+                                "Assault", 
+                                "Intentional self-harm", 
+                                "Motor vehicle crashes",
+                                "Unintentional falls",
+                                "Unintentionally struck by or against an object",                                
+                                "Other or no mechanism specified",  
+                                "Other unintentional injury, mechanism unspecified"))
+
+```
+
+```{r}
+#| include: FALSE
+#| warning: FALSE
+#| message: FALSE
+
+# Chose to go with rate analysis instead of case number analysis, so this code block is not included.
+
+# Wrangling data into case number tibbles
+all_number_tbi <- tbi_year %>%
+  filter(injury_mechanism != "Total") %>%
+  group_by(year, type) %>%
+  summarise(total_cases_yr = round(sum(number_est)/100000, digits = 2))
+
+mech_sum_tbi <- tbi_year %>%
+  filter(injury_mechanism != "Total") %>%
+  group_by(year, injury_mechanism, type) %>%
+  summarise(mech_case_num = round(sum(number_est)/100000, digits = 2))
+
+# Joining the two tibbles together
+tbi_counts <- left_join(mech_sum_tbi, all_number_tbi, by = c("year", "type"))
+
+# Plotting the number of TBI cases over time
+
+ggplot(tbi_counts) +
+  geom_point(aes(x = year, y = total_cases_yr, color = "Total"), size = 3, alpha = 0.5) +
+  geom_line(aes(x = year, y = total_cases_yr, color = "Total"), size = 1, alpha = 0.5) +
+  geom_point(aes(x = year, y = mech_case_num, color = injury_mechanism), size = 2, alpha = 0.5) +
+  geom_line(aes(x = year, y = mech_case_num, color = injury_mechanism), size = 0.5, alpha = 0.5) +
+  facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths")),
+             scales = "free_y") +
+  labs(title = "Estimated Case Numbers of TBI in the US (2006-2014)",
        subtitle = "insert subtitle here",
        x = "Year",
-       y = "Number of cases in thousands",
-       caption = "insert caption here") +
+       y = "Number of cases (in 100,000s)",
+       caption = "insert caption here",
+       color = "Mechanism") +
   theme_bw() +
   theme(plot.title = element_text(size = 14, face = "bold", color = "black", 
                                   hjust = 0.5, margin = margin(b = 10)),
         axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
         plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
-        legend.position = "none")
-
-
+        legend.position = "right",
+        legend.title = element_text(size = 8, face = "bold", margin = margin(r = 5)),
+        legend.text = element_text(size = 6, margin = margin(r = 5))) +
+  scale_color_manual(labels = function(x) str_wrap(x, width = 5), 
+                     values = c("Total" = "black",
+                                "Assault" = "#A40000FF",
+                                "Intentional self-harm" = "#16317DFF",
+                                "Motor vehicle crashes" = "#007E2FFF",
+                                "Other or no mechanism specified" = "#FFCD12FF",
+                                "Other unintentional injury, mechanism unspecified" = "#B86092FF",
+                                "Unintentional falls" = "#721B3EFF",
+                                "Unintentionally struck by or against an object" = "#00B7A7FF"),
+                     limits = c("Total",
+                                "Unintentional falls",
+                                "Motor vehicle crashes",
+                                "Assault",
+                                "Unintentionally struck by or against an object",
+                                "Other unintentional injury, mechanism unspecified",
+                                "Intentional self-harm",
+                                "Other or no mechanism specified"))
 ```
+
+
+
+
+## [Summary of Results]{style="color:  #2D4947;"}
+
+*4-6 sentence paragraph to go here
+
+
+## [Functions Used]{style="color:  #2D4947;"}
+
+-   **dplyr**: `filter`, `group_by`, `summarise`, `left_join`
+-   **ggplot2**: `ggplot`, `geom_point`, `geom_line`, `scale_color_manual`, `facet_wrap`, `labs`, `theme_bw`, `theme`
