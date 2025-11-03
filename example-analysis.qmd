@@ -14,6 +14,13 @@ format: html
 Link to GitHub Repo and data dictionary: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-03-24/readme.md).
 :::
 
+![](tbi_summary.png)
+
+:::{.column-margin}
+TBI graphic summary is from [Brain Injury Association of America](https://www.biausa.org/public-affairs/public-awareness/brain-injury-awareness-month).
+:::
+
+
 ```{r}
 #| warning: FALSE
 # Reading in data of interest
@@ -32,8 +39,6 @@ For the purposes of this analysis, "outcome" refers to the level of severity (i.
 ```{r}
 #| warning: FALSE
 #| message: FALSE
-#| fig.width: 8
-#| fig.height: 4
 
 library(dplyr)
 library(tidyr)
@@ -52,12 +57,52 @@ mech_rate_tbi <- tbi_year %>%
 # Joining the two tibbles together
 tbi_rates <- left_join(mech_rate_tbi, all_rate_tbi, by = c("year", "type"))
 
+# Making table for total TBI cases per year
+total_per_yr <- tbi_year %>%
+  group_by(year) %>%
+  summarise(total_case_count = round(sum(number_est, na.rm = TRUE)/1000000, digits = 2))
+```
+
+```{r}
+#| column: margin
+
+knitr::kable(total_per_yr)
+```
+
+```{r}
+#| warning: FALSE
+#| message: FALSE
+
 library(ggplot2)
 library(ggtext)
 library(stringr)
 
-# Plotting the rate of TBI over time
-# Overall rates by outcome (allows for direct comparison)
+# Plot overall case counts per year
+ggplot(total_per_yr, aes(x = year, y = total_case_count, fill = factor(year))) +
+  geom_bar(aes(x = year, y = total_case_count, fill = factor(year)), stat = "identity") +
+  scale_x_continuous(breaks = unique(total_per_yr$year), labels = unique(total_per_yr$year)) +
+  scale_fill_manual(values = c("#C969A1FF", "#CE4441FF", "#EE8577FF", "#EB7926FF", "#FFBB44FF", "#859B6CFF", "#62929AFF", "#004F63FF", "#122451FF")) +
+  geom_text(aes(label = total_per_yr$total_case_count), vjust = -0.5, size = 2) +
+  labs(title = "Total Estimated Number of TBI Cases in the US Over Time (2006-2014)",
+       subtitle = "insert subtitle here",
+       x = "Year",
+       y = "Number of cases (in millions)",
+       caption = "insert caption here") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", color = "black", 
+                                  hjust = 0.5, margin = margin(b = 10)),
+        axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
+        plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        legend.position = "none")
+
+```
+
+```{r}
+#| warning: FALSE
+#| message: FALSE
+#| fig.height: 4
+
+# Plot overall rates by outcome (allows for direct comparison)
 ggplot(tbi_rates) +
   geom_point(aes(x = year, y = total_rate, color = type), size = 3) +
   geom_line(aes(x = year, y = total_rate, color = type), size = 1) +
@@ -76,15 +121,15 @@ ggplot(tbi_rates) +
         axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
         plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
         legend.position = "none")
-
 ```
+
 ```{r}
 #| warning: FALSE
 #| message: FALSE
 #| fig.width: 10
 #| fig.height: 8
 
-# Rates by outcome and mechanism (scaled, more detailed view)
+# Plot rates by outcome and mechanism (scaled, more detailed view)
 ggplot(tbi_rates) +
   geom_point(aes(x = year, y = total_rate, color = "All"), size = 3, alpha = 0.5) +
   geom_line(aes(x = year, y = total_rate, color = "All"), size = 1, alpha = 0.5) +
@@ -129,71 +174,23 @@ ggplot(tbi_rates) +
 
 ```
 
+[**TBI by Age**]{style="color:  #68A39F;"}
+
 ```{r}
-#| include: FALSE
 #| warning: FALSE
 #| message: FALSE
 
-# Chose to go with rate analysis instead of case number analysis, so this code block is not included.
-
-# Wrangling data into case number tibbles
-all_number_tbi <- tbi_year %>%
+mech_age_tbi <- tbi_age %>%
   filter(injury_mechanism != "Total") %>%
-  group_by(year, type) %>%
-  summarise(total_cases_yr = round(sum(number_est)/100000, digits = 2))
+  group_by(age_group, injury_mechanism, type) %>%
+  summarise(mech_age_rate = rate_est)
 
-mech_sum_tbi <- tbi_year %>%
-  filter(injury_mechanism != "Total") %>%
-  group_by(year, injury_mechanism, type) %>%
-  summarise(mech_case_num = round(sum(number_est)/100000, digits = 2))
+mech_age_tbi <- mech_age_tbi %>%
+  pivot_wider(names_from = injury_mechanism, values_from = mech_age_rate)
 
-# Joining the two tibbles together
-tbi_counts <- left_join(mech_sum_tbi, all_number_tbi, by = c("year", "type"))
 
-# Plotting the number of TBI cases over time
 
-ggplot(tbi_counts) +
-  geom_point(aes(x = year, y = total_cases_yr, color = "Total"), size = 3, alpha = 0.5) +
-  geom_line(aes(x = year, y = total_cases_yr, color = "Total"), size = 1, alpha = 0.5) +
-  geom_point(aes(x = year, y = mech_case_num, color = injury_mechanism), size = 2, alpha = 0.5) +
-  geom_line(aes(x = year, y = mech_case_num, color = injury_mechanism), size = 0.5, alpha = 0.5) +
-  facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths")),
-             scales = "free_y") +
-  labs(title = "Estimated Case Numbers of TBI in the US (2006-2014)",
-       subtitle = "insert subtitle here",
-       x = "Year",
-       y = "Number of cases (in 100,000s)",
-       caption = "insert caption here",
-       color = "Mechanism") +
-  theme_bw() +
-  theme(plot.title = element_text(size = 14, face = "bold", color = "black", 
-                                  hjust = 0.5, margin = margin(b = 10)),
-        axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
-        plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
-        legend.position = "right",
-        legend.title = element_text(size = 8, face = "bold", margin = margin(r = 5)),
-        legend.text = element_text(size = 6, margin = margin(r = 5))) +
-  scale_color_manual(labels = function(x) str_wrap(x, width = 5), 
-                     values = c("Total" = "black",
-                                "Assault" = "#A40000FF",
-                                "Intentional self-harm" = "#16317DFF",
-                                "Motor vehicle crashes" = "#007E2FFF",
-                                "Other or no mechanism specified" = "#FFCD12FF",
-                                "Other unintentional injury, mechanism unspecified" = "#B86092FF",
-                                "Unintentional falls" = "#721B3EFF",
-                                "Unintentionally struck by or against an object" = "#00B7A7FF"),
-                     limits = c("Total",
-                                "Unintentional falls",
-                                "Motor vehicle crashes",
-                                "Assault",
-                                "Unintentionally struck by or against an object",
-                                "Other unintentional injury, mechanism unspecified",
-                                "Intentional self-harm",
-                                "Other or no mechanism specified"))
 ```
-
-
-
 
 ## [Summary of Results]{style="color:  #2D4947;"}
 
@@ -203,4 +200,10 @@ ggplot(tbi_counts) +
 ## [Functions Used]{style="color:  #2D4947;"}
 
 -   **dplyr**: `filter`, `group_by`, `summarise`, `left_join`
--   **ggplot2**: `ggplot`, `geom_point`, `geom_line`, `scale_color_manual`, `facet_wrap`, `labs`, `theme_bw`, `theme`
+-   **tidyr**: `pivot_wider`
+-   **ggplot2**: `geom_point`, `geom_line`, `geom_bar`, `scale_color_manual`, `facet_wrap`, `labs`, `theme_bw`, `theme`, `scale_x_continuous`, `geom_text`
+
+*Other packages*
+
+-   **ggtext**: `element_textbox_simple`
+-   **stringr**: `str_wrap`
