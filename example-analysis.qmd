@@ -17,7 +17,7 @@ Traumatic brain injury (TBI) is the result of some type of external damage to th
 [**Data Source:**]{style="color:  #68A39F;"} This basic analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community [@tidytuesday]. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the CDC [@cdc2014].
 
 ::: callout-important
-Link to GitHub Repo and **data dictionary**: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-03-24/readme.md).
+Link to GitHub Repo and **data dictionary**: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-03-24/readme.md). Scroll down to see the data dictionary for both data sets used in this analysis.
 :::
 
 ---
@@ -53,6 +53,7 @@ library(tidyr)
 library(ggplot2)
 library(ggtext)
 library(stringr)
+library(forcats)
 ```
 
 ---
@@ -66,30 +67,14 @@ For the purposes of this analysis, "outcome" refers to the level of severity (i.
 ```{r}
 #| warning: FALSE
 #| message: FALSE
-
-# Wrangling data into rate tibbles
-all_rate_tbi <- tbi_year %>%
-  filter(injury_mechanism == "Total") %>%
-  group_by(year, type) %>%
-  summarise(total_rate = rate_est)
-
-mech_rate_tbi <- tbi_year %>%
-  filter(injury_mechanism != "Total") %>%
-  group_by(year, injury_mechanism, type) %>%
-  summarise(mech_rate = rate_est)
-
-# Joining the two tibbles together
-tbi_rates <- left_join(mech_rate_tbi, all_rate_tbi, by = c("year", "type"))
+#| column: margin
 
 # Making table for total TBI cases per year
 total_per_yr <- tbi_year %>%
   group_by(year) %>%
   summarise(total_case_count = round(sum(number_est, na.rm = TRUE)/1000000, digits = 2))
-```
 
-```{r}
-#| column: margin
-
+# Displaying table
 knitr::kable(total_per_yr)
 ```
 
@@ -97,7 +82,7 @@ knitr::kable(total_per_yr)
 #| warning: FALSE
 #| message: FALSE
 
-# Plot overall case counts per year
+# Plot table to better visualize overall case counts per year
 ggplot(total_per_yr, aes(x = year, y = total_case_count, fill = factor(year))) +
   geom_point(aes(x = year, y = total_case_count, color = factor(year)), stat = "identity", size = 4) +
   geom_smooth(aes(x = year, y = total_case_count, group = 1), method = "loess", size = 0.5, color = "black", alpha = 0.1) +
@@ -124,6 +109,20 @@ ggplot(total_per_yr, aes(x = year, y = total_case_count, fill = factor(year))) +
 #| message: FALSE
 #| fig.width: 10
 #| fig.height: 8
+
+# Wrangling data into rate tibbles
+all_rate_tbi <- tbi_year %>%
+  filter(injury_mechanism == "Total") %>%
+  group_by(year, type) %>%
+  summarise(total_rate = rate_est)
+
+mech_rate_tbi <- tbi_year %>%
+  filter(injury_mechanism != "Total") %>%
+  group_by(year, injury_mechanism, type) %>%
+  summarise(mech_rate = rate_est)
+
+# Joining the two tibbles together
+tbi_rates <- left_join(mech_rate_tbi, all_rate_tbi, by = c("year", "type"))
 
 # Plot rates by outcome and mechanism (scaled, more detailed view)
 ggplot(tbi_rates) +
@@ -178,31 +177,126 @@ We will specifically look at the most recent year of data available, 2014, which
 #| warning: FALSE
 #| message: FALSE
 
+# Wrangling age df for total cases by age group
 total_count_age <- tbi_age %>%
   filter((age_group != "Total") & (age_group != "0-17")) %>%
   count(age_group, wt = number_est, name = "total_case_count") %>%
   group_by(age_group) %>%
   summarise(total_case_count = total_case_count/1000) %>%
   ungroup()
+# Re-level factors in case not ordered from youngest to oldest
+total_count_age$age_group <- fct_relevel(total_count_age$age_group, 
+                                     c("0-4", "5-14", "15-24", "25-34", "35-44", 
+                                       "45-54", "55-64", "65-74", "75+"))
 
+# Bar chart for total case numbers
 ggplot(total_count_age) +
   geom_bar(aes(x = age_group, y = total_case_count, fill = age_group), 
            stat = "identity", position = "dodge") +
   scale_fill_manual(values = c("#C969A1FF", "#CE4441FF", "#EE8577FF", "#EB7926FF", "#FFBB44FF", "#859B6CFF", "#62929AFF", "#004F63FF", "#122451FF")) +
   labs(title = "Total Estimated Number of TBI Cases in the US by Age Group in 2014",
        subtitle = "We can see which age groups had higher numbers of TBI cases in 2014. Notably, individuals aged 15-24 and 75+ had the highest number of cases.",
-       x = "Age Group",
+       x = "Age Group (in years)",
        y = "Number of cases (in thousands)",
        caption = "Data source: CDC TBI Surveillance Report") +
   theme_bw() +
   theme(plot.title = element_text(size = 12, face = "bold", color = "black", 
                                   hjust = 0.5, margin = margin(b = 10)),
-        axis.text.x = element_text(size = 6, angle = 45, hjust = 1, margin = margin(b = 10)), 
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1, margin = margin(b = 10)), 
         plot.subtitle = element_textbox_simple(size = 8, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
         plot.caption = element_text(size = 6),
         legend.position = "none")
+  
+  
 ```
+```{r}
+#| warning: FALSE
+#| message: FALSE
 
+# Mean case numbers by outcome for each age group --> see overall what outcomes are most common for each age
+means <- tbi_age %>%
+  filter((age_group != "Total") & (age_group != "0-17")) %>%
+  group_by(age_group, type) %>%
+  summarise(mean_cases = (mean(number_est, na.rm = TRUE)/1000))
+# Re-level factors that are out of order
+means$type <- fct_relevel(means$type, c("Emergency Department Visit", "Hospitalizations", "Deaths"))
+means$age_group <- fct_relevel(means$age_group, c("0-4", "5-14", "15-24", "25-34", "35-44", 
+                                                  "45-54", "55-64", "65-74", "75+"))
+
+# Bar chart for mean case numbers by outcome for each age group
+ggplot(means, aes(x = age_group, y = mean_cases)) +
+  geom_bar(aes(fill = type), stat = "identity", position = "dodge") +
+  labs(title = "Average Number of TBI cases for each Outcome by Age Group in 2014",
+       subtitle = "In the average number of cases acorss all causes, we can see which outcomes were more common for each age group. Emergency department visits were the most common outcome across all age groups, and more severe outcomes appear to increase on average as age increases.",
+       x = "Age Group (in years)",
+       y = "Average Number of cases (in thousands)",
+       caption = "Data source: CDC TBI Surveillance Report",
+       fill = "Outcome") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 12, face = "bold", color = "black", 
+                                  hjust = 0.5, margin = margin(b = 10)),
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1, margin = margin(b = 10)), 
+        plot.subtitle = element_textbox_simple(size = 8, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        plot.caption = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold", margin = margin(r = 5)),
+        legend.text = element_text(size = 8, margin = margin(r = 5)),
+        legend.key.spacing.y = unit(0.5, "lines")) +
+  scale_fill_manual(labels = function(x) str_wrap(x, width = 8),
+                    values = c("Emergency Department Visit" = "#00B7A7FF",
+                               "Hospitalizations" = "#F7E690FF",
+                               "Deaths" = "#EE8577FF"),,
+                    limits = c("Emergency Department Visit",
+                               "Hospitalizations",
+                               "Deaths"))
+  
+```
+```{r}
+#| warning: FALSE
+#| message: FALSE
+
+# Mean case numbers by outcome for each age group --> see overall what outcomes are most common for each age
+means_mech <- tbi_age %>%
+  filter((age_group != "Total") & (age_group != "0-17")) %>%
+  group_by(age_group, injury_mechanism) %>%
+  summarise(mean_cases = (mean(number_est, na.rm = TRUE)/1000))
+# Re-level factors that are out of order
+means$age_group <- fct_relevel(means$age_group, c("0-4", "5-14", "15-24", "25-34", "35-44", 
+                                                  "45-54", "55-64", "65-74", "75+"))
+
+# Bar chart for mean case numbers by outcome for each age group
+ggplot(means_mech, aes(x = age_group, y = mean_cases)) +
+  geom_bar(aes(fill = injury_mechanism), stat = "identity", position = "dodge") +
+  labs(title = "Average Number of TBI cases for each Mechanism of Injury by Age Group in 2014",
+       subtitle = "In the average number of cases acorss all causes, we can see which causes were more common for each age group (e.g., motor vehicle crashes appear to be most common in the 15-24 age group, while unintentional falls are more common in the 75+ age group).",
+       x = "Age Group (in years)",
+       y = "Average Number of cases (in thousands)",
+       caption = "Data source: CDC TBI Surveillance Report",
+       fill = "Mechanisms") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 12, face = "bold", color = "black", 
+                                  hjust = 0.5, margin = margin(b = 10)),
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1, margin = margin(b = 10)), 
+        plot.subtitle = element_textbox_simple(size = 8, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        plot.caption = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold", margin = margin(r = 5)),
+        legend.text = element_text(size = 6, margin = margin(r = 5)),
+        legend.key.spacing.y = unit(0.5, "lines")) +
+  scale_fill_manual(labels = function(x) str_wrap(x, width = 5), 
+                     values = c("Assault" = "#A40000FF",
+                                "Intentional self-harm" = "#16317DFF",
+                                "Motor Vehicle Crashes" = "#007E2FFF",
+                                "Other or no mechanism specified" = "#FFCD12FF",
+                                "Other unintentional injury, mechanism unspecified" = "#B86092FF",
+                                "Unintentional Falls" = "#721B3EFF",
+                                "Unintentionally struck by or against an object" = "#00B7A7FF"),
+                     limits = c("Assault", 
+                                "Intentional self-harm", 
+                                "Motor Vehicle Crashes",
+                                "Unintentional Falls",
+                                "Unintentionally struck by or against an object",                         
+                                "Other or no mechanism specified",  
+                                "Other unintentional injury, mechanism unspecified"))
+```
 
 ```{r}
 #| warning: FALSE
@@ -210,11 +304,16 @@ ggplot(total_count_age) +
 #| fig.width: 10
 #| fig.height: 8
 
+# Wrangling age df
 mech_age_tbi <- tbi_age %>%
   filter(injury_mechanism != "Total") %>%
   filter((age_group != "Total") & (age_group != "0-17")) %>%
   group_by(age_group, injury_mechanism, type) %>%
   summarise(mech_age_rate = rate_est)
+# Re-level factors in case not ordered from youngest to oldest
+mech_age_tbi$age_group <- fct_relevel(mech_age_tbi$age_group, 
+                                     c("0-4", "5-14", "15-24", "25-34", "35-44", 
+                                       "45-54", "55-64", "65-74", "75+"))
 
 # Stacked bar chart
 ggplot(mech_age_tbi) +
@@ -223,9 +322,9 @@ ggplot(mech_age_tbi) +
   facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths")),
              labeller = label_wrap_gen(width = 25),
              scales = "free_y") +
-    labs(title = "Rates of TBI in the US by Age Group in 2014",
+  labs(title = "Rates of TBI in the US by Age Group in 2014",
        subtitle = "Plots are faceted by outcome and further broken down by mechanism of injury to visualize potential trends specific to each outcome. We see some clear differences between age groups specific to certain mechanisms of injury (e.g., unintentional falls are much more common in individuals aged 0-4 and 75+, but the severity of outcome has the potential to be worse for 75+).",
-       x = "Age Group (in  years)",
+       x = "Age Group (in years)",
        y = "Rate per 100,000 in population",
        caption = "Data source: CDC TBI Surveillance Report\n\nNote: Facets individually scaled to help with visualizing\nspecific differences in mechanisims of injury",
        fill = "Mechanism") +
@@ -258,7 +357,17 @@ ggplot(mech_age_tbi) +
 
 ## [Summary of Results]{style="color:  #2D4947;"}
 
-\*4-6 sentence paragraph to go here
+From the above analysis, we can see that the total number of TBI cases increased between the years 2006 and 2014. When looking at rates of TBI over time, we can see that ED visits account for the majority of TBI cases and seems to be driving the increase of overall cases over the years. Hospitalizations and death are less common outcomes, both remaining relatively steady over time. Different mechanisms of injury appear to be "drivers" for different outcomes. For example, the cause with the highest rate of death is intentional self-harm, and unintentional falls account for a large proportion of the rate of TBI ED visits and hospitalizations
+
+When zooming in on the year 2014 and looking at TBI cases by age group, we can see that individuals aged 15-24 and 75+ had the highest number of cases. One explanation for this could be that 15-24 is the age range with more risk-taking behavior, and 75+ is when individuals tend to be more physically vulnerable and more prone to falls (based on average number of TBI cases caused by motor vehicle crashes and unintentional falls in the respective age groups). More severe outcomes appear to more likely in older age groups relative to younger ones. Additionally, certain mechanisms of injury appear to be more common in specific age groups; for instance, unintentional falls are much more common in individuals aged 0-4 and 75+, though result in more severe outcomes in the 75+ group.
+
+:::callout-note
+As a note, while this data set and analysis is limited, the differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can got to CDC's webpage on TBI and health disparities [@cdc2024].
+:::
+
+::: callout-important
+Data analysis limited by available information in the data set. Averages could only be taken from total case counts. Rates could not be averaged due to lack of information to take weighted averages. Additionally, age analysis could only be done on the year 2014. For more information on data limitations, you can look at the original surveillance report by the CDC [@cdc2014].
+:::
 
 ## [Functions Used]{style="color:  #2D4947;"}
 
@@ -269,3 +378,4 @@ ggplot(mech_age_tbi) +
 
 -   **ggtext**: `element_text()`, `element_textbox_simple()`
 -   **stringr**: `str_wrap()`
+-   **forcats**: `fct_relevel()`
