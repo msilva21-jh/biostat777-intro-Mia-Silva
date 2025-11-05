@@ -1,47 +1,71 @@
 ---
 title: "Example Analysis"
 format: html
+bibliography: references.bib
 ---
 
-## [Question]{style="color:  #2D4947;"} 
-**The goal is to have a better understanding of traumatic brain injury (TBI) trends and how different causes lead to different outcomes in certain populations. Specifically, how has the incidence of TBI changed over time between 2006 and 2014? How do different mechanisms of injury relate to patient outcomes, and does this differ by age?**
+---
+
+Traumatic brain injury (TBI) is the result of some type of external damage to the brain, which can vary in severity depending on the mechanism of injury and the individual [@hopkins]. It is a very common cause of disability and death, with millions of cases occurring each year in the U.S. alone [@cdc2014]. It's important that we continue to try and understand the etiology, clinical consequences, and trends in TBI incidence to better inform prevention efforts and clinical care.
+
+## [Question]{style="color:  #2D4947;"}
+
+**The goal is to have a better understanding of traumatic brain injury (TBI) trends and how different causes lead to different outcomes in certain populations. Specifically, how has the incidence of TBI changed over time between 2006 and 2014? How do different mechanisms of injury relate to patient outcomes, and zooming in on a specific year, does this differ by age?**
 
 [**Audience:**]{style="color:  #68A39F;"} The general public who are interested in learning more about the relatively recent history of TBI trends and outcomes .
 
-[**Data Source:**]{style="color:  #68A39F;"} This analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the [CDC](https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf).
+[**Data Source:**]{style="color:  #68A39F;"} This basic analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community [@tidytuesday]. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the CDC [@cdc2014].
 
-:::{.callout-important}
-Link to GitHub Repo and data dictionary: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-03-24/readme.md).
+::: callout-important
+Link to GitHub Repo and **data dictionary**: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-03-24/readme.md).
 :::
+
+---
 
 ![](tbi_summary.png)
 
-:::{.column-margin}
+::: column-margin
 TBI graphic summary is from [Brain Injury Association of America](https://www.biausa.org/public-affairs/public-awareness/brain-injury-awareness-month).
 :::
 
+---
 
-```{r}
-#| warning: FALSE
-# Reading in data of interest
-tbi_age <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv')
-tbi_year <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv')
-```
+If you're interested in both learning more about brain injury and how to get involved/raise awareness, you can check out the Brain Injury Association of America website linked in the margins.
+
+For a general, but slightly more in depth overview of TBI, you can read through Johns Hopkins Medicine's webpage on TBI that is geared toward their patients [@hopkins]. There is also this recent literature review [@OBASA2024100092] that provides a more detailed and nuanced overview of what TBI is, its classification and clinical significance, and potential long-term outcomes.
+
+---
 
 ## [Analysis]{style="color:  #2D4947;"}
 
+**Reading in data:**
+```{r}
+#| warning: FALSE
+tbi_age <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv')
+tbi_year <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv')
+```
+**Loading in necessary packages:**
+```{r}
+#| warning: FALSE
+#| message: FALSE
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggtext)
+library(stringr)
+```
+
+---
+
 [**Incidence Over Time**]{style="color:  #68A39F;"}
 
-:::{.callout-note}
+::: callout-note
 For the purposes of this analysis, "outcome" refers to the level of severity (i.e., how much medical attention received or mortality) following a TBI. This corresponds to "Emergency Department Visits", "Hospitalizations", and "Deaths" in the data set. "Mechanism of injury" and "cause" will be used interchangeably.
 :::
 
 ```{r}
 #| warning: FALSE
 #| message: FALSE
-
-library(dplyr)
-library(tidyr)
 
 # Wrangling data into rate tibbles
 all_rate_tbi <- tbi_year %>%
@@ -73,54 +97,26 @@ knitr::kable(total_per_yr)
 #| warning: FALSE
 #| message: FALSE
 
-library(ggplot2)
-library(ggtext)
-library(stringr)
-
 # Plot overall case counts per year
 ggplot(total_per_yr, aes(x = year, y = total_case_count, fill = factor(year))) +
-  geom_bar(aes(x = year, y = total_case_count, fill = factor(year)), stat = "identity") +
+  geom_point(aes(x = year, y = total_case_count, color = factor(year)), stat = "identity", size = 4) +
+  geom_smooth(aes(x = year, y = total_case_count, group = 1), method = "loess", size = 0.5, color = "black", alpha = 0.1) +
   scale_x_continuous(breaks = unique(total_per_yr$year), labels = unique(total_per_yr$year)) +
-  scale_fill_manual(values = c("#C969A1FF", "#CE4441FF", "#EE8577FF", "#EB7926FF", "#FFBB44FF", "#859B6CFF", "#62929AFF", "#004F63FF", "#122451FF")) +
-  geom_text(aes(label = total_per_yr$total_case_count), vjust = -0.5, size = 2) +
+  scale_color_manual(values = c("#C969A1FF", "#CE4441FF", "#EE8577FF", "#EB7926FF", "#FFBB44FF", "#859B6CFF", "#62929AFF", "#004F63FF", "#122451FF")) +
+  geom_text(aes(label = total_per_yr$total_case_count), vjust = -3, size = 2) +
   labs(title = "Total Estimated Number of TBI Cases in the US Over Time (2006-2014)",
-       subtitle = "insert subtitle here",
+       subtitle = "The recorded number of TBI cases in this data set increased steadily over time.",
        x = "Year",
        y = "Number of cases (in millions)",
-       caption = "insert caption here") +
+       caption = "Data source: CDC TBI Surveillance Report") +
   theme_bw() +
   theme(plot.title = element_text(size = 14, face = "bold", color = "black", 
                                   hjust = 0.5, margin = margin(b = 10)),
         axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
-        plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        plot.subtitle = element_textbox_simple(size = 10, margin = margin(b = 12, unit = "pt")),
+        plot.caption = element_text(size = 6),
         legend.position = "none")
 
-```
-
-```{r}
-#| warning: FALSE
-#| message: FALSE
-#| fig.height: 4
-
-# Plot overall rates by outcome (allows for direct comparison)
-ggplot(tbi_rates) +
-  geom_point(aes(x = year, y = total_rate, color = type), size = 3) +
-  geom_line(aes(x = year, y = total_rate, color = type), size = 1) +
-  scale_color_manual(values = c("Emergency Department Visit" = "#1BB6AFFF", 
-                               "Hospitalizations" = "#088BBEFF", 
-                               "Deaths" = "#172869FF")) +
-  facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths"))) +
-  labs(title = "Overall Rates of TBI in the US Over Time by Outcome (2006-2014)",
-       subtitle = "insert subtitle here",
-       x = "Year",
-       y = "Rate per 100,000 in population",
-       caption = "insert caption here") +
-  theme_bw() +
-  theme(plot.title = element_text(size = 14, face = "bold", color = "black", 
-                                  hjust = 0.5, margin = margin(b = 10)),
-        axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
-        plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
-        legend.position = "none")
 ```
 
 ```{r}
@@ -139,21 +135,21 @@ ggplot(tbi_rates) +
              labeller = label_wrap_gen(width = 25),
              scales = "free_y") +
   labs(title = "Rates of TBI in the US Over Time (2006-2014)",
-       subtitle = "Plots faceted by outcome and further broken down by mechanism of injury to visualize potential trends specific to each outcome",
+       subtitle = "Plots faceted by outcome and further broken down by mechanism of injury to visualize potential trends specific to each outcome. We can see higher rates of TBI by certain mechanisms of injury in specific outcomes (e.g., TBI due to intentional self harm appear to result in death more often than other outcomes).",
        x = "Year",
        y = "Rate per 100,000 in population",
-       caption = "Note: Facets individually scaled to help with visualizing\nspecific differences in mechanisims of injury",
+       caption = "Data source: CDC TBI Surveillance Report\n\nNote: Facets individually scaled to help with visualizing\nspecific differences in mechanisims of injury",
        color = "Mechanism") +
   theme_bw() +
-  theme(plot.title = element_text(size = 12, face = "bold", color = "black", 
+  theme(plot.title = element_text(size = 14, face = "bold", color = "black", 
                                   hjust = 0.5, margin = margin(b = 10)),
         axis.text.x = element_text(angle = 45, hjust = 1, margin = margin(b = 10)), 
-        plot.subtitle = element_text(size = 8, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
-        plot.caption = element_text(size = 6),
+        plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        plot.caption = element_text(size = 8),
         legend.position = "right",
-        legend.title = element_text(size = 8, face = "bold", margin = margin(r = 5)),
-        legend.text = element_text(size = 6, margin = margin(r = 5)),
-        legend.key.size = unit(2.5, "lines")) +
+        legend.title = element_text(size = 10, face = "bold", margin = margin(r = 5)),
+        legend.text = element_text(size = 8, margin = margin(r = 5)),
+        legend.key.spacing.y = unit(0.8, "lines")) +
   scale_color_manual(labels = function(x) str_wrap(x, width = 10), 
                      values = c("All" = "black",
                                 "Assault" = "#A40000FF",
@@ -168,7 +164,7 @@ ggplot(tbi_rates) +
                                 "Intentional self-harm", 
                                 "Motor vehicle crashes",
                                 "Unintentional falls",
-                                "Unintentionally struck by or against an object",                                
+                                "Unintentionally struck by or against an object",                         
                                 "Other or no mechanism specified",  
                                 "Other unintentional injury, mechanism unspecified"))
 
@@ -176,34 +172,100 @@ ggplot(tbi_rates) +
 
 [**TBI by Age**]{style="color:  #68A39F;"}
 
+We will specifically look at the most recent year of data available, 2014, which also has the highest incidence of TBI cases according to the previous analysis.
+
 ```{r}
 #| warning: FALSE
 #| message: FALSE
 
+total_count_age <- tbi_age %>%
+  filter((age_group != "Total") & (age_group != "0-17")) %>%
+  count(age_group, wt = number_est, name = "total_case_count") %>%
+  group_by(age_group) %>%
+  summarise(total_case_count = total_case_count/1000) %>%
+  ungroup()
+
+ggplot(total_count_age) +
+  geom_bar(aes(x = age_group, y = total_case_count, fill = age_group), 
+           stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("#C969A1FF", "#CE4441FF", "#EE8577FF", "#EB7926FF", "#FFBB44FF", "#859B6CFF", "#62929AFF", "#004F63FF", "#122451FF")) +
+  labs(title = "Total Estimated Number of TBI Cases in the US by Age Group in 2014",
+       subtitle = "We can see which age groups had higher numbers of TBI cases in 2014. Notably, individuals aged 15-24 and 75+ had the highest number of cases.",
+       x = "Age Group",
+       y = "Number of cases (in thousands)",
+       caption = "Data source: CDC TBI Surveillance Report") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 12, face = "bold", color = "black", 
+                                  hjust = 0.5, margin = margin(b = 10)),
+        axis.text.x = element_text(size = 6, angle = 45, hjust = 1, margin = margin(b = 10)), 
+        plot.subtitle = element_textbox_simple(size = 8, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        plot.caption = element_text(size = 6),
+        legend.position = "none")
+```
+
+
+```{r}
+#| warning: FALSE
+#| message: FALSE
+#| fig.width: 10
+#| fig.height: 8
+
 mech_age_tbi <- tbi_age %>%
   filter(injury_mechanism != "Total") %>%
+  filter((age_group != "Total") & (age_group != "0-17")) %>%
   group_by(age_group, injury_mechanism, type) %>%
   summarise(mech_age_rate = rate_est)
 
-mech_age_tbi <- mech_age_tbi %>%
-  pivot_wider(names_from = injury_mechanism, values_from = mech_age_rate)
-
-
-
+# Stacked bar chart
+ggplot(mech_age_tbi) +
+  geom_bar(aes(x = age_group, y = mech_age_rate, fill = injury_mechanism),
+           stat = "identity", position = "stack", alpha = 0.8) +
+  facet_wrap(~factor(type, levels = c("Emergency Department Visit", "Hospitalizations", "Deaths")),
+             labeller = label_wrap_gen(width = 25),
+             scales = "free_y") +
+    labs(title = "Rates of TBI in the US by Age Group in 2014",
+       subtitle = "Plots are faceted by outcome and further broken down by mechanism of injury to visualize potential trends specific to each outcome. We see some clear differences between age groups specific to certain mechanisms of injury (e.g., unintentional falls are much more common in individuals aged 0-4 and 75+, but the severity of outcome has the potential to be worse for 75+).",
+       x = "Age Group (in  years)",
+       y = "Rate per 100,000 in population",
+       caption = "Data source: CDC TBI Surveillance Report\n\nNote: Facets individually scaled to help with visualizing\nspecific differences in mechanisims of injury",
+       fill = "Mechanism") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold", color = "black", 
+                                  hjust = 0.5, margin = margin(b = 10)),
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1, margin = margin(b = 10)), 
+        plot.subtitle = element_textbox_simple(size = 10, hjust = 0.5, margin = margin(b = 12, unit = "pt")),
+        plot.caption = element_text(size = 8),
+        legend.position = "right",
+        legend.title = element_text(size = 8, face = "bold", margin = margin(r = 5)),
+        legend.text = element_text(size = 8, margin = margin(r = 5)),
+        legend.key.spacing.y = unit(0.5, "lines")) +
+  scale_fill_manual(labels = function(x) str_wrap(x, width = 10),
+                     values = c("Assault" = "#A40000FF",
+                                "Intentional self-harm" = "#16317DFF",
+                                "Motor Vehicle Crashes" = "#007E2FFF",
+                                "Other or no mechanism specified" = "#FFCD12FF",
+                                "Other unintentional injury, mechanism unspecified" = "#B86092FF",
+                                "Unintentional Falls" = "#721B3EFF",
+                                "Unintentionally struck by or against an object" = "#00B7A7FF"),
+                     limits = c("Assault", 
+                                "Intentional self-harm", 
+                                "Motor Vehicle Crashes",
+                                "Unintentional Falls",
+                                "Unintentionally struck by or against an object",                         
+                                "Other or no mechanism specified",  
+                                "Other unintentional injury, mechanism unspecified"))
 ```
 
 ## [Summary of Results]{style="color:  #2D4947;"}
 
-*4-6 sentence paragraph to go here
-
+\*4-6 sentence paragraph to go here
 
 ## [Functions Used]{style="color:  #2D4947;"}
 
--   **dplyr**: `filter`, `group_by`, `summarise`, `left_join`
--   **tidyr**: `pivot_wider`
--   **ggplot2**: `geom_point`, `geom_line`, `geom_bar`, `scale_color_manual`, `facet_wrap`, `labs`, `theme_bw`, `theme`, `scale_x_continuous`, `geom_text`
+-   **dplyr**: `filter()`, `group_by()`, `summarise()`, `left_join()`, `count()`, `ungroup()`
+-   **ggplot2**: `geom_point()`, `geom_line()`, `geom_bar()`, `scale_color_manual()`, `facet_wrap()`, `labs()`, `theme_bw()`, `theme()`, `scale_x_continuous()`, `geom_text()`
 
 *Other packages*
 
--   **ggtext**: `element_textbox_simple`
--   **stringr**: `str_wrap`
+-   **ggtext**: `element_text()`, `element_textbox_simple()`
+-   **stringr**: `str_wrap()`
