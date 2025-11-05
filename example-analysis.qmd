@@ -266,7 +266,7 @@ means$age_group <- fct_relevel(means$age_group, c("0-4", "5-14", "15-24", "25-34
 # Bar chart for mean case numbers by outcome for each age group
 ggplot(means_mech, aes(x = age_group, y = mean_cases)) +
   geom_bar(aes(fill = injury_mechanism), stat = "identity", position = "dodge") +
-  labs(title = "Average Number of TBI cases for each Mechanism of Injury by Age Group in 2014",
+  labs(title = "Average Number of TBI cases for each\nMechanism of Injury by Age Group in 2014",
        subtitle = "In the average number of cases acorss all causes, we can see which causes were more common for each age group (e.g., motor vehicle crashes appear to be most common in the 15-24 age group, while unintentional falls are more common in the 75+ age group).",
        x = "Age Group (in years)",
        y = "Average Number of cases (in thousands)",
@@ -362,7 +362,7 @@ From the above analysis, we can see that the total number of TBI cases increased
 When zooming in on the year 2014 and looking at TBI cases by age group, we can see that individuals aged 15-24 and 75+ had the highest number of cases. One explanation for this could be that 15-24 is the age range with more risk-taking behavior, and 75+ is when individuals tend to be more physically vulnerable and more prone to falls (based on average number of TBI cases caused by motor vehicle crashes and unintentional falls in the respective age groups). More severe outcomes appear to more likely in older age groups relative to younger ones. Additionally, certain mechanisms of injury appear to be more common in specific age groups; for instance, unintentional falls are much more common in individuals aged 0-4 and 75+, though result in more severe outcomes in the 75+ group.
 
 :::callout-note
-As a note, while this data set and analysis is limited, the differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can got to CDC's webpage on TBI and health disparities [@cdc2024].
+The differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can got to the CDC's webpage on TBI and health disparities [@cdc2025].
 :::
 
 ::: callout-important

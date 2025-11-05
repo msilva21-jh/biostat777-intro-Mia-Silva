@@ -512,7 +512,7 @@ Note
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Bar chart for mean case numbers by outcome for each age group</span></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(means_mech, <span class="fu">aes</span>(<span class="at">x =</span> age_group, <span class="at">y =</span> mean_cases)) <span class="sc">+</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> injury_mechanism), <span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Average Number of TBI cases for each Mechanism of Injury by Age Group in 2014"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Average Number of TBI cases for each</span><span class="sc">\n</span><span class="st">Mechanism of Injury by Age Group in 2014"</span>,</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"In the average number of cases acorss all causes, we can see which causes were more common for each age group (e.g., motor vehicle crashes appear to be most common in the 15-24 age group, while unintentional falls are more common in the 75+ age group)."</span>,</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Age Group (in years)"</span>,</span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average Number of cases (in thousands)"</span>,</span>
@@ -623,7 +623,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>As a note, while this data set and analysis is limited, the differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can got to CDC’s webpage on TBI and health disparities <span class="citation" data-cites="cdc2024">(<a href="#ref-cdc2024" role="doc-biblioref"><strong>cdc2024?</strong></a>)</span>.</p>
+<p>The differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can got to the CDC’s webpage on TBI and health disparities <span class="citation" data-cites="cdc2025">(<a href="#ref-cdc2025" role="doc-biblioref">Disease Control and Prevention 2025</a>)</span>.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -663,6 +663,9 @@ Community, Data Science Learning. 2024. <span>“Tidy Tuesday: A Weekly Social D
 </div>
 <div id="ref-cdc2014" class="csl-entry" role="listitem">
 Disease Control, Centers for, and Prevention. 2014. <span>“Surveillance Report of Traumatic Brain Injury-Related Emergency Department Visits, Hospitalizations, and Deaths.”</span> <a href="https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf">https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf</a>.
+</div>
+<div id="ref-cdc2025" class="csl-entry" role="listitem">
+———. 2025. <span>“Traumatic Brain Injury &amp; Concussion: Health Disparities in TBI.”</span> <a href="https://www.cdc.gov/traumatic-brain-injury/health-equity/index.html">https://www.cdc.gov/traumatic-brain-injury/health-equity/index.html</a>.
 </div>
 <div id="ref-hopkins" class="csl-entry" role="listitem">
 Medicine, Johns Hopkins. n.d. <span>“Traumatic Brain Injury.”</span> <a href="https://www.hopkinsmedicine.org/health/conditions-and-diseases/traumatic-brain-injury">https://www.hopkinsmedicine.org/health/conditions-and-diseases/traumatic-brain-injury</a>.
