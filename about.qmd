@@ -1,0 +1,106 @@
+---
+title: "About"
+format:
+  html: 
+    grid:
+      sidebar-width: 200px
+      body-width: 900px
+      margin-width: 200px
+      gutter-width: 2rem
+---
+
+```{r load_packages}
+#| message: FALSE
+#| warning: FALSE
+#| include: FALSE
+library(fontawesome)
+```
+
+------------------------------------------------------------------------
+
+## [`r fontawesome::fa("graduation-cap", fill = "#2D4947")` Education]{style="color:  #2D4947;"}
+
+[**Johns Hopkins Bloomberg School of Public Health**]{style="color:  #68A39F;"} [Baltimore, MD]{style="float:right"} <br>ScM in Biostatistics [Aug 2025 - May 2027]{style="float:right"}
+
+[**University of California, Davis**]{style="color:  #68A39F;"} [Davis, CA]{style="float:right"} <br>B.S. in Cognitive Science with Neuroscience Emphasis, Minor in Psychology [Sept 2019 - Dec 2022]{style="float:right"}
+
+------------------------------------------------------------------------
+
+## [`r fontawesome::fa("lightbulb", fill = "#2D4947")` Research Experience]{style="color:  #2D4947;"}
+
+[**UC Davis Health, Pediatric Endocrinology & Diabetes**]{style="color:  #68A39F;"} [Sacramento, CA]{style="float:right"} <br>Staff Research Associate II [Aug 2023 - Aug 2025]{style="float:right"}
+
+[**UC Davis Center for Mind and Brain, Memory and Development Lab**]{style="color:  #68A39F;"} [Davis, CA]{style="float:right"} <br>Research Assistant [June 2021 - Dec 2022]{style="float:right"}
+
+------------------------------------------------------------------------
+
+## [`r fontawesome::fa("apple-whole", fill = "#2D4947")` Teaching Experience]{style="color:  #2D4947;"}
+
+[**UC Davis Academic Assistance and Tutoring Center**]{style="color:  #68A39F;"} [Davis, CA]{style="float:right"} <br>Physics Tutor [Sept 2021 - Mar 2023]{style="float:right"}
+
+[**UC Davis Department of Biology**]{style="color:  #68A39F;"} [Davis, CA]{style="float:right"} <br>Learning Assistant [Jan 2021 - June 2021]{style="float:right"}
+
+------------------------------------------------------------------------
+
+## [`r fontawesome::fa("panorama", fill = "#2D4947")` Presentation]{style="color:  #2D4947;"}
+
+Crossen S, **Silva M**, Warfel A, May K, Reddy S, Arbiter B. Remote Patient Monitoring for PwT1D Experiencing Elevated Glycemic Measures. Oral presentation at the T1Dx-QI Annual Learning Session, Atlanta, GA, November 2025.
+
+------------------------------------------------------------------------
+
+## [`r fontawesome::fa("screwdriver-wrench", fill = "#2D4947")` Skills]{style="color:  #2D4947;"}
+
+::::: {layout-ncol="2"}
+::: left
+[**Computer**]{style="color:  #68A39F;"}
+
+-   R `r fontawesome::fa("r-project", fill = "#2D4947")`
+-   Microsoft Excel, Word, and Powerpoint `r fontawesome::fa("microsoft", fill = "#2D4947")`
+-   REDCap `r fontawesome::fa("desktop", fill = "#2D4947")`
+-   Qualtrics `r fontawesome::fa("network-wired", fill = "#2D4947")`
+-   Epic/EMR `r fontawesome::fa("laptop-medical", fill = "#2D4947")`
+-   OnCore `r fontawesome::fa("calendar-check", fill = "#2D4947")`
+-   Docusign `r fontawesome::fa("file-signature", fill = "#2D4947")`
+-   Google Docs, Slides, Sheets, and Forms `r fontawesome::fa("google", fill = "#2D4947")`
+-   Familiar with Python `r fontawesome::fa("python", fill = "#2D4947")`
+:::
+
+::: right
+[**Laboratory**]{style="color:  #68A39F;"}
+
+-   Blood processing `r fontawesome::fa("droplet", fill = "#2D4947")`
+-   Urine processing `r fontawesome::fa("glass-water", fill = "#2D4947")`
+-   fMRI safety monitoring `r fontawesome::fa("brain", fill = "#2D4947")`
+:::
+:::::
+
+[**CITI Trainigs**]{style="color:  #68A39F;"}
+
+-   Basic Course for Biomedical Researchers and Staff [(Exp. 9/13/26)]{style="float:right"}
+-   Good Clinical Practice Course for Clinical Trials Involving Investigational Medical Devices [(Exp. 5/15/28)]{style="float:right"}
+
+------------------------------------------------------------------------
+
+## [`r fontawesome::fa("award", fill = "#2D4947")` Honors and Awards]{style="color:  #2D4947;"}
+
+[**Department Citation for Outstanding Performance in Cognitive Science**]{style="color:  #68A39F;"}<br> May 2022
+
+[**Dean's Honor List**]{style="color:  #68A39F;"}<br> Dec 2019, Mar 2020, Jun 2020, Jan 2021, Apr 2021, Jun 2021, Dec 2021, Dec 2022
+
+------------------------------------------------------------------------
+
+## [`r fontawesome::fa("heart", fill = "#2D4947")` Personal Interests & Fun Facts]{style="color:  #2D4947;"}
+
+[**Hobbies**]{style="color:  #68A39F;"}
+
+-   I love music! I grew up listening to a lot of the bands from the 50s and 60s, so my taste in music now has largely been influenced by that. I tend to have an affinity for music inspired by jazz standards and traditional pop and swing. I also played piano for 10 years and definitely miss having more time to practice as a hobby! My life goal is to learn how to play "Merry-Go-Round of Life" from Howl's Moving Castle one day. `r fontawesome::fa("music", fill = "#2D4947")`
+-   I was a very avid reader growing up, amassing over 220 physical books in my childhood room by the time I exited high school. I've started to reignite my love for reading recently, but now opt for library books -- saving money and supporting our library systems at the same time! `r fontawesome::fa("book-open-reader", fill = "#2D4947")`
+-   Cozy gaming has become one of my favorite ways to honor my inner child. I particularly enjoy indie games that have cute art styles and calming soundtracks such as Stardew Valley and Smushi Come Home, and nostalgic Nintendo games like Pokemon and Legend of Zelda. `r fontawesome::fa("gamepad", fill = "#2D4947")`
+-   I also enjoy drawing and crafting whenever I feel inspired! I've always liked doodling nature and improving my portrait skills. I recently started experimenting with polymer clay as well to make cute little figurines for myself and friends. `r fontawesome::fa("paintbrush", fill = "#2D4947")`
+
+[**Activities**]{style="color:  #68A39F;"}
+
+-   Exploring new places `r fontawesome::fa("tree", fill = "#2D4947")`
+-   Spending time with friends and family `r fontawesome::fa("people-group", fill = "#2D4947")`
+-   I also enjoy trying new restaurants and cafes, and am always on the lookout for a good cup of coffee or tea `r fontawesome::fa("bowl-food", fill = "#2D4947")` `r fontawesome::fa("mug-saucer", fill = "#2D4947")`
+-   I hope to travel more in the future, especially internationally `r fontawesome::fa("globe", fill = "#2D4947")`
