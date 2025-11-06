@@ -42,8 +42,9 @@ For a general, but slightly more in depth overview of TBI, you can read through 
 
 ```{r}
 #| warning: FALSE
-tbi_age <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv')
-tbi_year <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv')
+library(readr)
+tbi_age <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv')
+tbi_year <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv')
 ```
 
 **Loading in necessary packages:**
