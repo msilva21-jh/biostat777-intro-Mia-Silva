@@ -42,12 +42,7 @@ For a general, but slightly more in depth overview of TBI, you can read through 
 
 ```{r}
 #| warning: FALSE
-
-if(!require("readr", quietly = TRUE)){
-  install.packages("readr")
-}
 library(readr)
-
 tbi_age <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv')
 tbi_year <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv')
 ```
@@ -57,29 +52,11 @@ tbi_year <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytues
 ```{r}
 #| warning: FALSE
 #| message: FALSE
-if(!require("dplyr", quietly = TRUE)){
-  install.packages("dplyr")
-}
+
 library(dplyr)
-
-if(!require("ggplot2", quietly = TRUE)){
-  install.packages("ggplot2")
-}
 library(ggplot2)
-
-if(!require("ggtext", quietly = TRUE)){
-  install.packages("ggtext")
-}
 library(ggtext)
-
-if(!require("stringr", quietly = TRUE)){
-  install.packages("stringr")
-}
 library(stringr)
-
-if(!require("forcats", quietly = TRUE)){
-  install.packages("forcats")
-}
 library(forcats)
 ```
 
@@ -272,7 +249,7 @@ ggplot(means, aes(x = age_group, y = mean_cases)) +
   scale_fill_manual(labels = function(x) str_wrap(x, width = 8),
                     values = c("Emergency Department Visit" = "#00B7A7FF",
                                "Hospitalizations" = "#F7E690FF",
-                               "Deaths" = "#EE8577FF"),,
+                               "Deaths" = "#EE8577FF"),
                     limits = c("Emergency Department Visit",
                                "Hospitalizations",
                                "Deaths"))
