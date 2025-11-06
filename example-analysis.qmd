@@ -4,7 +4,7 @@ format: html
 bibliography: references.bib
 ---
 
----
+------------------------------------------------------------------------
 
 Traumatic brain injury (TBI) is the result of some type of external damage to the brain, which can vary in severity depending on the mechanism of injury and the individual [@hopkins]. It is a very common cause of disability and death, with millions of cases occurring each year in the U.S. alone [@cdc2014]. It's important that we continue to try and understand the etiology, clinical consequences, and trends in TBI incidence to better inform prevention efforts and clinical care.
 
@@ -14,13 +14,13 @@ Traumatic brain injury (TBI) is the result of some type of external damage to th
 
 [**Audience:**]{style="color:  #68A39F;"} The general public who are interested in learning more about the relatively recent history of TBI trends and outcomes .
 
-[**Data Source:**]{style="color:  #68A39F;"} This basic analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community [@tidytuesday]. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the CDC [@cdc2014].
+[**Data Source:**]{style="color:  #68A39F;"} This basic analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community [@tidytuesday]. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the [CDC](https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf) [@cdc2014].
 
 ::: callout-important
 Link to GitHub Repo and **data dictionary**: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-03-24/readme.md). Scroll down to see the data dictionary for both data sets used in this analysis.
 :::
 
----
+------------------------------------------------------------------------
 
 ![](tbi_summary.png)
 
@@ -28,23 +28,26 @@ Link to GitHub Repo and **data dictionary**: [tidytuesday](https://github.com/rf
 TBI graphic summary is from [Brain Injury Association of America](https://www.biausa.org/public-affairs/public-awareness/brain-injury-awareness-month).
 :::
 
----
+------------------------------------------------------------------------
 
 If you're interested in both learning more about brain injury and how to get involved/raise awareness, you can check out the Brain Injury Association of America website linked in the margins.
 
 For a general, but slightly more in depth overview of TBI, you can read through Johns Hopkins Medicine's webpage on TBI that is geared toward their patients [@hopkins]. There is also this recent literature review [@OBASA2024100092] that provides a more detailed and nuanced overview of what TBI is, its classification and clinical significance, and potential long-term outcomes.
 
----
+------------------------------------------------------------------------
 
 ## [Analysis]{style="color:  #2D4947;"}
 
 **Reading in data:**
+
 ```{r}
 #| warning: FALSE
 tbi_age <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv')
 tbi_year <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv')
 ```
+
 **Loading in necessary packages:**
+
 ```{r}
 #| warning: FALSE
 #| message: FALSE
@@ -56,7 +59,7 @@ library(stringr)
 library(forcats)
 ```
 
----
+------------------------------------------------------------------------
 
 [**Incidence Over Time**]{style="color:  #68A39F;"}
 
@@ -209,6 +212,7 @@ ggplot(total_count_age) +
   
   
 ```
+
 ```{r}
 #| warning: FALSE
 #| message: FALSE
@@ -250,6 +254,7 @@ ggplot(means, aes(x = age_group, y = mean_cases)) +
                                "Deaths"))
   
 ```
+
 ```{r}
 #| warning: FALSE
 #| message: FALSE
@@ -357,16 +362,16 @@ ggplot(mech_age_tbi) +
 
 ## [Summary of Results]{style="color:  #2D4947;"}
 
-From the above analysis, we can see that the total number of TBI cases increased between the years 2006 and 2014. When looking at rates of TBI over time, we can see that ED visits account for the majority of TBI cases and seems to be driving the increase of overall cases over the years. Hospitalizations and death are less common outcomes, both remaining relatively steady over time. Different mechanisms of injury appear to be "drivers" for different outcomes. For example, the cause with the highest rate of death is intentional self-harm, and unintentional falls account for a large proportion of the rate of TBI ED visits and hospitalizations
+From the above analysis, we can see that the total number of TBI cases increased between the years 2006 and 2014. When looking at rates of TBI over time, we can see that ED visits account for the majority of TBI cases and seems to be driving the increase of overall cases over the years. Hospitalizations and deaths are less common outcomes, and both remain relatively steady over time. Different mechanisms of injury also appear to be "drivers" for different outcomes. For example, TBI due to intentional self-harm has the highest rate over the years for the outcome of death, and unintentional falls account for a large proportion of the rate of TBI-related ED visits and hospitalizations.
 
 When zooming in on the year 2014 and looking at TBI cases by age group, we can see that individuals aged 15-24 and 75+ had the highest number of cases. One explanation for this could be that 15-24 is the age range with more risk-taking behavior, and 75+ is when individuals tend to be more physically vulnerable and more prone to falls (based on average number of TBI cases caused by motor vehicle crashes and unintentional falls in the respective age groups). More severe outcomes appear to more likely in older age groups relative to younger ones. Additionally, certain mechanisms of injury appear to be more common in specific age groups; for instance, unintentional falls are much more common in individuals aged 0-4 and 75+, though result in more severe outcomes in the 75+ group.
 
-:::callout-note
-The differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can got to the CDC's webpage on TBI and health disparities [@cdc2025].
+::: callout-note
+The differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can go to the CDC's webpage on TBI and health disparities [@cdc2025].
 :::
 
 ::: callout-important
-Data analysis limited by available information in the data set. Averages could only be taken from total case counts. Rates could not be averaged due to lack of information to take weighted averages. Additionally, age analysis could only be done on the year 2014. For more information on data limitations, you can look at the original surveillance report by the CDC [@cdc2014].
+Data analysis is limited by available information in the data set. Averages could only be taken from total case counts. Rates could not be averaged due to lack of information to take weighted averages. Additionally, age analysis could only be done on the year 2014. For more information on data limitations, you can look at the original surveillance report by the CDC [@cdc2014].
 :::
 
 ## [Functions Used]{style="color:  #2D4947;"}
