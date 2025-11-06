@@ -210,7 +210,7 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="question"><span style="color:  #2D4947;">Question</span></h2>
 <p><strong>The goal is to have a better understanding of traumatic brain injury (TBI) trends and how different causes lead to different outcomes in certain populations. Specifically, how has the incidence of TBI changed over time between 2006 and 2014? How do different mechanisms of injury relate to patient outcomes, and zooming in on a specific year, does this differ by age?</strong></p>
 <p><span style="color:  #68A39F;"><strong>Audience:</strong></span> The general public who are interested in learning more about the relatively recent history of TBI trends and outcomes .</p>
-<p><span style="color:  #68A39F;"><strong>Data Source:</strong></span> This basic analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community <span class="citation" data-cites="tidytuesday">(<a href="#ref-tidytuesday" role="doc-biblioref">Community 2024</a>)</span>. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the CDC <span class="citation" data-cites="cdc2014">(<a href="#ref-cdc2014" role="doc-biblioref">Disease Control and Prevention 2014</a>)</span>.</p>
+<p><span style="color:  #68A39F;"><strong>Data Source:</strong></span> This basic analysis will use data from the Traumatic Brain Injury (TBI) data set posted by the TidyTuesday project from the Data Science Learning Community <span class="citation" data-cites="tidytuesday">(<a href="#ref-tidytuesday" role="doc-biblioref">Community 2024</a>)</span>. This was originally collected to spread awareness about the incidence and causes of brain injury in America. The specific data used in this analysis was sourced from the <a href="https://www.cdc.gov/traumaticbraininjury/pdf/TBI-Surveillance-Report-FINAL_508.pdf">CDC</a> <span class="citation" data-cites="cdc2014">(<a href="#ref-cdc2014" role="doc-biblioref">Disease Control and Prevention 2014</a>)</span>.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -238,8 +238,9 @@ Important
 <h2 class="anchored" data-anchor-id="analysis"><span style="color:  #2D4947;">Analysis</span></h2>
 <p><strong>Reading in data:</strong></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tbi_age <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv'</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tbi_year <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tbi_age <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_age.csv'</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tbi_year <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-03-24/tbi_year.csv'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong>Loading in necessary packages:</strong></p>
 <div class="cell">
@@ -611,7 +612,7 @@ Note
 </section>
 <section id="summary-of-results" class="level2">
 <h2 class="anchored" data-anchor-id="summary-of-results"><span style="color:  #2D4947;">Summary of Results</span></h2>
-<p>From the above analysis, we can see that the total number of TBI cases increased between the years 2006 and 2014. When looking at rates of TBI over time, we can see that ED visits account for the majority of TBI cases and seems to be driving the increase of overall cases over the years. Hospitalizations and death are less common outcomes, both remaining relatively steady over time. Different mechanisms of injury appear to be “drivers” for different outcomes. For example, the cause with the highest rate of death is intentional self-harm, and unintentional falls account for a large proportion of the rate of TBI ED visits and hospitalizations</p>
+<p>From the above analysis, we can see that the total number of TBI cases increased between the years 2006 and 2014. When looking at rates of TBI over time, we can see that ED visits account for the majority of TBI cases and seems to be driving the increase of overall cases over the years. Hospitalizations and deaths are less common outcomes, and both remain relatively steady over time. Different mechanisms of injury also appear to be “drivers” for different outcomes. For example, TBI due to intentional self-harm has the highest rate over the years for the outcome of death, and unintentional falls account for a large proportion of the rate of TBI-related ED visits and hospitalizations.</p>
 <p>When zooming in on the year 2014 and looking at TBI cases by age group, we can see that individuals aged 15-24 and 75+ had the highest number of cases. One explanation for this could be that 15-24 is the age range with more risk-taking behavior, and 75+ is when individuals tend to be more physically vulnerable and more prone to falls (based on average number of TBI cases caused by motor vehicle crashes and unintentional falls in the respective age groups). More severe outcomes appear to more likely in older age groups relative to younger ones. Additionally, certain mechanisms of injury appear to be more common in specific age groups; for instance, unintentional falls are much more common in individuals aged 0-4 and 75+, though result in more severe outcomes in the 75+ group.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -623,7 +624,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can got to the CDC’s webpage on TBI and health disparities <span class="citation" data-cites="cdc2025">(<a href="#ref-cdc2025" role="doc-biblioref">Disease Control and Prevention 2025</a>)</span>.</p>
+<p>The differences in TBI incidence and outcomes across age groups and mechanisms of injury can serve to highlight health disparities that need to be addressed, especially with the potential rise in TBI cases over time. For more information on these disparities, you can go to the CDC’s webpage on TBI and health disparities <span class="citation" data-cites="cdc2025">(<a href="#ref-cdc2025" role="doc-biblioref">Disease Control and Prevention 2025</a>)</span>.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -636,7 +637,7 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Data analysis limited by available information in the data set. Averages could only be taken from total case counts. Rates could not be averaged due to lack of information to take weighted averages. Additionally, age analysis could only be done on the year 2014. For more information on data limitations, you can look at the original surveillance report by the CDC <span class="citation" data-cites="cdc2014">(<a href="#ref-cdc2014" role="doc-biblioref">Disease Control and Prevention 2014</a>)</span>.</p>
+<p>Data analysis is limited by available information in the data set. Averages could only be taken from total case counts. Rates could not be averaged due to lack of information to take weighted averages. Additionally, age analysis could only be done on the year 2014. For more information on data limitations, you can look at the original surveillance report by the CDC <span class="citation" data-cites="cdc2014">(<a href="#ref-cdc2014" role="doc-biblioref">Disease Control and Prevention 2014</a>)</span>.</p>
 </div>
 </div>
 </section>
@@ -747,7 +748,7 @@ Obasa, Adedunsola Adewunmi, Funmilayo Eniola Olopade, Sharon Leah Juliano, and J
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/www\.miasilva\.com");
+        var filterRegex = new RegExp("https:\/\/msilva21-jh\.github\.io\/biostat777-intro-Mia-Silva\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
